@@ -1,4 +1,3 @@
-#! python3
 import SimpleITK
 import SimpleITK as sitk
 import matplotlib.pyplot as plt
@@ -14,13 +13,13 @@ USE_COSINES_AND_ORIGIN = 1
 
 ############################## REGISTRATION PARAMETER FILES ######################
 similarityMetricForReg = 'NMI'
-parameterFilesPath = '../../Data/Elastix/'
+parameterFilesPath = '../Data/Elastix/'
 paramFileRigid = 'Parameters_Rigid_' + similarityMetricForReg
 paramFileAffine = 'Parameters_Affine_' + similarityMetricForReg
 ############################### IMAGES AVAILABLE ###################################
 
-dataPath = 'D:/Dixon German Balerdi/'# Base data path.
-outputPath = 'D:/Dixon German Balerdi/resampled/' # Base data path.
+dataPath = 'D:/PROYECTO FINAL/1LumbarSpineDixonData/3DManualSegmentations/'# Base data path.
+outputPath = 'D:/PROYECTO FINAL/1LumbarSpineDixonData/3DManualSegmentationsResampled/' # Base data path.
 if not os.path.exists(outputPath):
     os.makedirs(outputPath)
 # Get the atlases names and files:
@@ -31,7 +30,7 @@ data = sorted(data)
 extensionShortcuts = 'lnk'
 strForShortcut = '-> '
 extensionImages = 'mhd'
-tagInPhase = '_ff'
+tagInPhase = '_labels'
 
 atlasNames = [] # Names of the atlases
 atlasImageFilenames = [] # Filenames of the intensity images
@@ -64,10 +63,10 @@ print("List of atlases: {0}\n".format(atlasNames))
 
 ################################### READ IMAGES, EXTRACT SLICES AND REGISTER IMAGES TO THE REFERENCE ########################################
 for i in range(0, len(atlasNames)):
-    print('Altas:{0}\n'.format(atlasImageFilenames[i]))
+    print('Altas:{0}\n'.format(atlasNames[i]))
 
     # Read target image:
-    atlasImage = sitk.ReadImage(dataPath + 'gbalerdi_w.mhd')
+    atlasImage = sitk.ReadImage(atlasImageFilenames[i])
 
     # Cast the image as float:
     atlasImage = sitk.Cast(atlasImage, sitk.sitkFloat32)   #lo convierte en float 32
@@ -94,7 +93,7 @@ for i in range(0, len(atlasNames)):
 
     # write the 3d images:
     resampled_image = sitk.Cast(resampled_image, sitk.sitkFloat32)
-    sitk.WriteImage(resampled_image, outputPath + atlasNames[i] + '_w.' + extensionImages)
+    sitk.WriteImage(resampled_image, outputPath + atlasNames[i] + '_lbl.' + extensionImages)
 
     # Show images:
     if DEBUG:

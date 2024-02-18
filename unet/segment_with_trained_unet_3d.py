@@ -9,11 +9,12 @@ from utils import FilterUnconnectedRegions
 from utils import cuda_memoryUsage
 
 ############################ DATA PATHS ##############################################
-dataPath = 'D:/Dixon German Balerdi/resampled/'
-outputPath = '../../Data/LumbarSpine3D/InputImages/'
-modelLocation = '../../Data/LumbarSpine3D/PretrainedModel/'
+dataPath = 'D:/UnetLumbarSpine/Data/LumbarSpine3D/InputImages/'
+outputPath = 'D:/UnetLumbarSpine/Data/LumbarSpine3D/InputImages/'
+modelLocation = 'D:/UnetLumbarSpine/Data/LumbarSpine3D/PretrainedModel/'
 # Image format extension:
 extensionImages = 'mhd'
+loadDict = False
 
 if not os.path.exists(dataPath):
     os.makedirs(dataPath)
@@ -29,10 +30,15 @@ if device.type == 'cuda':
 
 ######################### MODEL INIT ######################
 multilabelNum = 8
-torch.cuda.empty_cache()
-model = Unet(1, multilabelNum)
-model.load_state_dict(torch.load(modelFilename, map_location=device))
-model = model.to(device)
+if loadDict:
+    torch.cuda.empty_cache()
+    model = Unet(1, multilabelNum)
+    model.load_state_dict(torch.load(modelFilename, map_location=device))
+    model = model.to(device)
+else:
+    model = torch.load(modelFilename,map_location=device)
+    model = model.to(device)
+
 trainable_params = [p for p in model.parameters() if p.requires_grad]
 num_trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"Number of trainable parameters: {num_trainable_params}")
@@ -49,6 +55,7 @@ for filename in files:
     name, extension = os.path.splitext(filename)
     if extension.endswith('raw') or not name.endswith('i'):
         continue
+
     filenameImage = dataPath + filename
     sitkImage = sitk.ReadImage(filenameImage)
     image = sitk.GetArrayFromImage(sitkImage).astype(np.float32)
@@ -62,8 +69,8 @@ for filename in files:
         outputs = maxProb(output, multilabelNum)
         output = ((output > 0.5) * 1)
         output = multilabel(output.detach().numpy())
-    output = FilterUnconnectedRegions(output.squeeze(0), multilabelNum, sitkImage)# Herramienta de filtrado de imagenes
+    output = FilterUnconnectedRegions(output.squeeze(0), multilabelNum, sitkImage,[0,0,0])# Herramienta de filtrado de imagenes
     print(name)
 
-    sitk.WriteImage(output, dataPath + name[0:-2] + '_segmentation' + extension)
+    sitk.WriteImage(output, dataPath + name[0:-2] + '_seg' + extension)
     #writeMhd(output.squeeze(0).astype(np.uint8), outputPath + name + '_segmentation' + extension, sitkImage) # sin herramienta de filtrado

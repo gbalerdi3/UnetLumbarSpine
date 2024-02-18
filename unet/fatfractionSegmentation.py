@@ -4,18 +4,18 @@ import os
 import csv
 
 ############################ DATA PATHS ##############################################
-dataPath = "D:/FatFractionValidacionRaw/"
-outputPath = "D:/"
+dataPath = "D:/PROYECTO FINAL/1LumbarSpineDixonData/BlandAltman/FatFractionValidacion/"
+outputPath = "D:/PROYECTO FINAL/1LumbarSpineDixonData/BlandAltman/"
 muscleNames = ['Pi', 'Ii', 'Ci', 'Mi', 'Pd', 'Id', 'Cd', 'Md', 'Promedio']
 
 files = os.listdir(dataPath)
 files = sorted(files) # must be sorted, otherwise masks and images could be mixed
 auxName = str
-tagFatFraction = '_fat_fraction.mhd'
+tagFatFraction = '_ff.mhd'
 tagMask = '_labels.mhd'
 
 # Abrir el archivo CSV en modo de escritura
-with open(outputPath + 'SegmentacionesManualesFatFraction.csv', mode="w", newline="") as archivo_csv:
+with open(outputPath + 'labelsFatFraction.csv', mode="w", newline="") as archivo_csv:
     # Crear un objeto escritor CSV
     escritor_csv = csv.writer(archivo_csv)
 
