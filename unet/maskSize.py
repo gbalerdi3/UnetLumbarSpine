@@ -28,7 +28,7 @@ with open(outputPath + 'CSA_ManualSegmentations2D.csv', mode='w', newline="") as
             continue
         segmentationSize = maskSize(maskArray)
         voxelSize = np.prod(list(mask.GetSpacing()))
-        muscleSize = segmentationSize * voxelSize/100
+        muscleSize = segmentationSize * voxelSize/1000
         csvRow = (auxName, *muscleSize)
         csvRow = list(csvRow)
         print(auxName)
